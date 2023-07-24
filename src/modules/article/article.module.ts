@@ -7,6 +7,7 @@ import { ArticleController } from './article.controller';
 import { Article } from './article.entity';
 import { ArticleService } from './article.service';
 import { CategoryModule } from '../category/category.module';
+import { TagModule } from '../tag/tag.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CategoryModule } from '../category/category.module';
     FileModule,
     UserModule,
     CategoryModule,
+    TagModule,
   ],
   controllers: [ArticleController],
   providers: [ArticleService],

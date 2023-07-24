@@ -14,6 +14,7 @@ import { Category } from '../category/category.entity';
 import { Comment } from '../comment/comment.entity';
 import { FileEntity } from '../file/file.entity';
 import { User } from '../user/user.entity';
+import { Tag } from '../tag/tag.entity';
 
 @Entity({ name: 'article' })
 export class Article extends BaseEntity {
@@ -28,9 +29,6 @@ export class Article extends BaseEntity {
 
   @Column({ type: 'timestamp', nullable: false, default: () => 'NOW()' })
   date: string;
-
-  @Column('text', { array: true })
-  tags: string[];
 
   @Column({ default: 0 })
   likesCount: number;
@@ -47,9 +45,9 @@ export class Article extends BaseEntity {
   @OneToMany(() => Comment, (comment) => comment.article)
   comments: Comment[];
 
-  @ManyToOne(() => Category, (category) => category.articles)
-  @JoinColumn()
-  category: Category;
+  @ManyToMany(() => Category, (category) => category.articles)
+  @JoinTable()
+  category: Category[];
 
   @ManyToOne(() => User, (user) => user.articles, {
     cascade: true,
@@ -60,4 +58,10 @@ export class Article extends BaseEntity {
 
   @OneToMany(() => FileEntity, (file) => file.article)
   avatar: FileEntity[];
+
+  @ManyToMany(() => Tag, (tag) => tag.articles, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable()
+  tags: Tag[];
 }

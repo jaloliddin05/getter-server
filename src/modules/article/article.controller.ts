@@ -144,7 +144,7 @@ export class ArticleController {
     });
   }
 
-  @Post('/remove-like')
+  @Post('/remove-like/:articleId')
   @ApiOperation({ summary: 'Method: removes like from article' })
   @ApiCreatedResponse({
     description: 'The like removed successfully',
@@ -158,6 +158,30 @@ export class ArticleController {
       userId: request.user.id,
       articleId,
     });
+  }
+
+  @Post('/add-tag')
+  @ApiOperation({ summary: 'Method: adds tag to article' })
+  @ApiCreatedResponse({
+    description: 'The tag added successfully',
+  })
+  @HttpCode(HttpStatus.CREATED)
+  async addTagToArticle(
+    @Body() data: { articleId: string; tagId: string },
+  ): Promise<Article> {
+    return await this.articleService.addTagToArticle(data);
+  }
+
+  @Post('/remove-tag')
+  @ApiOperation({ summary: 'Method: removes tag from article' })
+  @ApiCreatedResponse({
+    description: 'The tag removed successfully',
+  })
+  @HttpCode(HttpStatus.CREATED)
+  async removeTagFromArticle(
+    @Body() data: { articleId: string; tagId: string },
+  ): Promise<Article> {
+    return await this.articleService.removeTagFromArticle(data);
   }
 
   @Patch('/:id')

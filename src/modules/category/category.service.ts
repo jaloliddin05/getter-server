@@ -34,6 +34,14 @@ export class CategoryService {
     return category;
   }
 
+  async getMoreByIds(ids: string[]) {
+    const data = await this.categoryRepository
+      .createQueryBuilder()
+      .where('id IN(:...ids)', { ids })
+      .getMany();
+    return data;
+  }
+
   async delete(id: string) {
     const response = await this.categoryRepository.delete(id);
     return response;

@@ -13,6 +13,7 @@ import { FileService } from '../file/file.service';
 import { Article } from './article.entity';
 import { UsersService } from '../user/user.service';
 import { CategoryService } from '../category/category.service';
+import { TagService } from '../tag/tag.service';
 
 @Injectable()
 export class ArticleService {
@@ -23,6 +24,7 @@ export class ArticleService {
     private readonly connection: DataSource,
     private readonly userService: UsersService,
     private readonly categoryService: CategoryService,
+    private readonly tagService: TagService,
   ) {}
 
   async getAll(
@@ -93,6 +95,7 @@ export class ArticleService {
         },
         avatar: true,
         likes: true,
+        tags: true,
       },
       where: { id },
     });
@@ -157,12 +160,14 @@ export class ArticleService {
       }
     }
 
-    const category = await this.categoryService.getById(values.category);
+    const category = await this.categoryService.getMoreByIds(values.categories);
     const user = await this.userService.getById(values.user);
+    const tags = await this.tagService.getMoreByIds(values.tags);
     const response = this.articleRepository.create({
       ...values,
       user,
       category,
+      tags,
     });
 
     return await this.articleRepository.save(response);
@@ -192,6 +197,28 @@ export class ArticleService {
     await this.connection.transaction(async (manager: EntityManager) => {
       await manager.save(article);
     });
+    return article;
+  }
+
+  async addTagToArticle(values: { articleId: string; tagId: string }) {
+    const article = await this.getById(values.articleId);
+    const tag = await this.tagService.getOne(values.tagId);
+    article.tags.push(tag);
+
+    await this.articleRepository.save(article);
+
+    return article;
+  }
+
+  async removeTagFromArticle(values: { articleId: string; tagId: string }) {
+    const article = await this.getById(values.articleId);
+
+    article.tags = article.tags.length
+      ? article.tags.filter((t) => t.id != values.tagId)
+      : [];
+
+    await this.articleRepository.save(article);
+
     return article;
   }
 

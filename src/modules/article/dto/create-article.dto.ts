@@ -30,7 +30,7 @@ class CreateArticleDto {
 
   @ApiProperty({
     description: `Tags`,
-    example: ['#ux', '#ui', '#design'],
+    example: ['uuid', 'uuid', 'uuid'],
   })
   @IsNotEmpty()
   @IsArray()
@@ -47,11 +47,17 @@ class CreateArticleDto {
 
   @ApiProperty({
     description: `Category ID`,
-    example: '734912fd-e011-4da6-b0a3-031fd82ab2f9',
+    example: [
+      '734912fd-e011-4da6-b0a3-031fd82ab2f9',
+      '734912fd-e011-4da6-b0a3-031fd82ab2f9',
+    ],
   })
+  @Transform(({ value }: { value: string }) =>
+    parseTextToArray('categories', value),
+  )
   @IsNotEmpty()
   @IsString()
-  readonly category: string;
+  readonly categories: string[];
 
   @ApiProperty({
     description: `User ID`,

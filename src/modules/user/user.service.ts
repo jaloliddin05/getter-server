@@ -57,6 +57,8 @@ export class UsersService {
         position: true,
         articles: {
           avatar: true,
+          tags: true,
+          category: true,
         },
       },
       where: { id },
