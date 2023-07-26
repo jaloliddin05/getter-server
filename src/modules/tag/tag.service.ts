@@ -29,6 +29,11 @@ export class TagService {
     return data;
   }
 
+  async getByTitle(title: string) {
+    const data = await this.tagRepository.findOne({ where: { title } });
+    return data;
+  }
+
   async getMoreByIds(ids: string[]) {
     const data = await this.tagRepository
       .createQueryBuilder()
@@ -48,7 +53,12 @@ export class TagService {
   }
 
   async create(value: CreateTagDto) {
+    const tag = await this.getByTitle(value.title);
+    if (tag) {
+      return tag;
+    }
     const data = this.tagRepository.create(value);
-    return await this.tagRepository.save(data);
+    const res = await this.tagRepository.save(data);
+    return { ...res, isNew: true };
   }
 }
