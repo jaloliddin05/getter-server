@@ -28,7 +28,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 @ApiTags('Tag')
 @Controller('tag')
 export class TagController {
-  constructor(private readonly positionService: TagService) {}
+  constructor(private readonly tagService: TagService) {}
 
   @Public()
   @Get('/')
@@ -38,7 +38,7 @@ export class TagController {
   })
   @HttpCode(HttpStatus.OK)
   async getData() {
-    return await this.positionService.getAll();
+    return await this.tagService.getAll();
   }
 
   @Public()
@@ -49,7 +49,7 @@ export class TagController {
   })
   @HttpCode(HttpStatus.OK)
   async getMe(@Param('id') id: string): Promise<Tag> {
-    return this.positionService.getOne(id);
+    return this.tagService.getOne(id);
   }
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)
@@ -59,8 +59,8 @@ export class TagController {
     description: 'The tag was created successfully',
   })
   @HttpCode(HttpStatus.CREATED)
-  async saveData(@Body() positionData: CreateTagDto): Promise<Tag> {
-    return await this.positionService.create(positionData);
+  async saveData(@Body() data: CreateTagDto) {
+    return await this.tagService.create(data);
   }
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)
@@ -74,7 +74,7 @@ export class TagController {
     @Body() positionData: UpdateTagDto,
     @Param('id') id: string,
   ): Promise<UpdateResult> {
-    return await this.positionService.change(positionData, id);
+    return await this.tagService.change(positionData, id);
   }
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)
@@ -85,6 +85,6 @@ export class TagController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteData(@Param('id') id: string) {
-    return await this.positionService.deleteOne(id);
+    return await this.tagService.deleteOne(id);
   }
 }
