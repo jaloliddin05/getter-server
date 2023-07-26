@@ -6,12 +6,7 @@ import * as path from 'path';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async register(body: {
-    password: string;
-    id: string;
-    name: string;
-    email: string;
-  }) {
+  async register(body: { code: string; email: string }) {
     await this.mailerService
       .sendMail({
         to: body.email,
@@ -19,9 +14,10 @@ export class MailService {
         text: `Getter uz Registration`,
         template: path.join(path.resolve(), 'src/templates/register.pug'),
         context: {
-          id: body.id,
-          name: body.name,
-          password: body.password,
+          // id: body.id,
+          // name: body.name,
+          // password: body.password,
+          code: body.code,
           email: body.email,
         },
       })

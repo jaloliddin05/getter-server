@@ -78,6 +78,30 @@ export class UsersController {
   }
 
   @Public()
+  @Get('/category/:userId')
+  @ApiOperation({ summary: 'Method: returns user article categories' })
+  @ApiOkResponse({
+    description: 'The user articles categories returned successfully',
+  })
+  @ApiForbiddenResponse({ description: 'Unauthorized Request' })
+  @HttpCode(HttpStatus.OK)
+  async getUserCategories(@Param('userId') userId: string) {
+    return await this.usersService.getUserCategories(userId);
+  }
+
+  @Public()
+  @Get('/tag/:userId')
+  @ApiOperation({ summary: 'Method: returns  user article tags' })
+  @ApiOkResponse({
+    description: 'The user articles tags returned successfully',
+  })
+  @ApiForbiddenResponse({ description: 'Unauthorized Request' })
+  @HttpCode(HttpStatus.OK)
+  async getUserTags(@Param('userId') userId: string) {
+    return await this.usersService.getUserTags(userId);
+  }
+
+  @Public()
   @Post('/')
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new user' })
@@ -131,10 +155,22 @@ export class UsersController {
     return await this.usersService.deleteOne(id);
   }
 
+  // @Public()
+  // @Get('/email/:id')
+  // async verifyEmail(@Param('id') id: string, @Res() res: Response) {
+  //   await this.usersService.setTrueEmail(id);
+  //   return res.redirect('https://getter.uz/auth/login');
+  // }
+
   @Public()
-  @Get('/email/:id')
-  async verifyEmail(@Param('id') id: string, @Res() res: Response) {
-    await this.usersService.setTrueEmail(id);
-    return res.redirect('https://getter.uz/auth/login');
+  @Post('/email/verify')
+  async verifyEmailCode(@Body() { code, hash }) {
+    return await this.usersService.verifyEmailCode(code, hash);
+  }
+
+  @Public()
+  @Post('/email/code-generate')
+  async generateEmailCode(@Body() { email }) {
+    return await this.usersService.generateEmailCode(email);
   }
 }

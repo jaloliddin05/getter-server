@@ -47,7 +47,7 @@ export class Article extends BaseEntity {
 
   @ManyToMany(() => Category, (category) => category.articles)
   @JoinTable()
-  category: Category[];
+  categories: Category[];
 
   @ManyToOne(() => User, (user) => user.articles, {
     cascade: true,

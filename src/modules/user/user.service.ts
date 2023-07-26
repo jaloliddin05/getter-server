@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import {
@@ -58,7 +59,7 @@ export class UsersService {
         articles: {
           avatar: true,
           tags: true,
-          category: true,
+          categories: true,
         },
       },
       where: { id },
@@ -75,6 +76,32 @@ export class UsersService {
       return user;
     }
     throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+  }
+
+  async getUserCategories(userId: string) {
+    const categories = this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.articles', 'article')
+      .leftJoinAndSelect('article.categories', 'category')
+      .where('user.id = :userId', { userId })
+      .groupBy('category.id')
+      .select(['category.id', 'category.title'])
+      .getMany();
+
+    return categories;
+  }
+
+  async getUserTags(userId: string) {
+    const tags = this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.articles', 'article')
+      .leftJoinAndSelect('article.tags', 'tag')
+      .where('user.id = :userId', { userId })
+      .groupBy('tag.id')
+      .select(['tag.id', 'tag.title'])
+      .getMany();
+
+    return tags;
   }
 
   async deleteOne(id: string) {
@@ -127,6 +154,18 @@ export class UsersService {
       }
       throw err;
     }
+  }
+
+  async verifyEmailCode(code: string, hash: string) {
+    const isValidCode = await bcrypt.compare(String(code), hash);
+    return isValidCode;
+  }
+
+  async generateEmailCode(email: string) {
+    const code = String(Math.floor(Math.random() * 9000) + 1000);
+    const hash = await bcrypt.hash(code, 10);
+    await this.mailService.register({ email, code });
+    return hash;
   }
 
   async uploadImage(file: Express.Multer.File, request) {

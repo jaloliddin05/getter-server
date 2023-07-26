@@ -18,6 +18,6 @@ export class Category extends BaseEntity {
   @Column({ nullable: true, type: 'varchar' })
   type: string;
 
-  @OneToMany(() => Article, (article) => article.category)
+  @OneToMany(() => Article, (article) => article.categories)
   articles: Article[];
 }

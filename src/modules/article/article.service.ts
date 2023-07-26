@@ -41,6 +41,15 @@ export class ArticleService {
           position: true,
         },
         avatar: true,
+        tags: true,
+        comments: {
+          user: {
+            avatar: true,
+          },
+        },
+        likes: {
+          avatar: true,
+        },
       },
       where,
     });
@@ -66,7 +75,7 @@ export class ArticleService {
         },
         avatar: true,
         likes: true,
-        category: true,
+        categories: true,
       },
       where: { id },
     });
@@ -115,9 +124,18 @@ export class ArticleService {
           position: true,
         },
         avatar: true,
+        tags: true,
+        comments: {
+          user: {
+            avatar: true,
+          },
+        },
+        likes: {
+          avatar: true,
+        },
       },
       where: {
-        category: { id },
+        categories: { id },
         isActive: true,
       },
     });
@@ -160,13 +178,15 @@ export class ArticleService {
       }
     }
 
-    const category = await this.categoryService.getMoreByIds(values.categories);
+    const categories = await this.categoryService.getMoreByIds(
+      values.categories,
+    );
     const user = await this.userService.getById(values.user);
     const tags = await this.tagService.getMoreByIds(values.tags);
     const response = this.articleRepository.create({
       ...values,
       user,
-      category,
+      categories,
       tags,
     });
 

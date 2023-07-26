@@ -25,11 +25,11 @@ export class AuthService {
     if (!isPasswordSame) {
       throw new BadRequestException('Invalid password');
     }
-    if (!user.isEmailValid) {
-      throw new BadRequestException(
-        'Please confirm your email, we send link to your gmail!',
-      );
-    }
+    // if (!user.isEmailValid) {
+    //   throw new BadRequestException(
+    //     'Please confirm your email, we send link to your gmail!',
+    //   );
+    // }
     return user;
   }
 
