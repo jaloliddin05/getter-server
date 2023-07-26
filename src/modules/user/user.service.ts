@@ -142,11 +142,6 @@ export class UsersService {
 
       const user = this.usersRepository.create({ ...data, position });
 
-      // await this.mailService.register({
-      //   ...user,
-      //   password: data.password,
-      // });
-
       return this.usersRepository.save(user);
     } catch (err) {
       if (err?.errno === 1062) {

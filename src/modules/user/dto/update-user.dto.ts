@@ -26,21 +26,21 @@ class UpdateUserDto {
   @MaxLength(125)
   readonly email: string;
 
-  @ApiProperty({
-    description: `Phone number`,
-    example: '+998998887766',
-  })
-  @IsOptional()
-  @IsString()
-  readonly phone: string;
+  // @ApiProperty({
+  //   description: `Phone number`,
+  //   example: '+998998887766',
+  // })
+  // @IsOptional()
+  // @IsString()
+  // readonly phone: string;
 
-  @ApiProperty({
-    description: `Description`,
-    example: 'ba.. ba.. ba..',
-  })
-  @IsOptional()
-  @IsString()
-  readonly description: string;
+  // @ApiProperty({
+  //   description: `Description`,
+  //   example: 'ba.. ba.. ba..',
+  // })
+  // @IsOptional()
+  // @IsString()
+  // readonly description: string;
 
   @ApiProperty({
     description: `role`,

@@ -29,21 +29,21 @@ class CreateUserDto {
   @MaxLength(125)
   readonly email: string;
 
-  @ApiProperty({
-    description: `Phone number`,
-    example: '+998998887766',
-  })
-  @IsNotEmpty()
-  @IsString()
-  readonly phone: string;
+  // @ApiProperty({
+  //   description: `Phone number`,
+  //   example: '+998998887766',
+  // })
+  // @IsNotEmpty()
+  // @IsString()
+  // readonly phone: string;
 
-  @ApiProperty({
-    description: `Description `,
-    example: 'I why fly ...',
-  })
-  @IsNotEmpty()
-  @IsString()
-  readonly description: string;
+  // @ApiProperty({
+  //   description: `Description `,
+  //   example: 'I why fly ...',
+  // })
+  // @IsNotEmpty()
+  // @IsString()
+  // readonly description: string;
 
   @ApiProperty({
     description: `Position id`,

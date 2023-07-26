@@ -37,11 +37,11 @@ export class User extends BaseEntity {
   @Column({ default: 1 })
   role: UserRole;
 
-  @Column()
-  phone: string;
+  // @Column()
+  // phone: string;
 
-  @Column({ nullable: true })
-  description: string;
+  // @Column({ nullable: true })
+  // description: string;
 
   @Column({ default: false })
   isEmailValid: boolean;
