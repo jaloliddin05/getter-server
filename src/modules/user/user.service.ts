@@ -132,23 +132,27 @@ export class UsersService {
   }
 
   async create(data: CreateUserDto, file: Express.Multer.File, req) {
-    try {
-      if (file) {
-        const avatar = await this.uploadImage(file, req);
-        data.avatar = avatar.id;
-      }
-      data.password = await hashPassword(data.password);
-      const position = await this.positionService.getOne(data.position);
+    const isEmailExist = await this.checkEmail(data.email);
 
-      const user = this.usersRepository.create({ ...data, position });
-
-      return this.usersRepository.save(user);
-    } catch (err) {
-      if (err?.errno === 1062) {
-        throw new Error('This user already exists.');
-      }
-      throw err;
+    if (isEmailExist) {
+      throw new HttpException('Email already exist', HttpStatus.BAD_REQUEST);
     }
+
+    if (file) {
+      const avatar = await this.uploadImage(file, req);
+      data.avatar = avatar.id;
+    }
+    data.password = await hashPassword(data.password);
+    const position = await this.positionService.getOne(data.position);
+
+    const user = this.usersRepository.create({ ...data, position });
+
+    return this.usersRepository.save(user);
+  }
+
+  async checkEmail(email: string) {
+    const data = await this.usersRepository.findOne({ where: { email } });
+    return data;
   }
 
   async verifyEmailCode(code: string, hash: string) {
