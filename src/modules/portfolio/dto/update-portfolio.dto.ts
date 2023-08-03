@@ -28,12 +28,11 @@ class UpdatePortfolioDto {
 
   @ApiProperty({
     description: `Portfolio image`,
-    example: 'file',
-    type: 'string',
-    format: 'binary',
+    example: 'url',
   })
   @IsOptional()
-  avatar
+  @IsString()
+  avatar: string;
 }
 
 export default UpdatePortfolioDto;

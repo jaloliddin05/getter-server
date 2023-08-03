@@ -26,13 +26,12 @@ class UpdateWebsiteDto {
   readonly link: string;
 
   @ApiProperty({
-    description: `Portfolio image`,
-    example: 'file',
-    type: 'string',
-    format: 'binary',
+    description: `avatar`,
+    example: 'url',
   })
   @IsOptional()
-  avatar
+  @IsString()
+  avatar: string;
 }
 
 export default UpdateWebsiteDto;

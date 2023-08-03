@@ -4,34 +4,24 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  HttpException,
   Delete,
   Patch,
   Param,
   Get,
-  UseInterceptors,
-  UploadedFile,
   Query,
   Req,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiOperation,
-  ApiConsumes,
 } from '@nestjs/swagger';
 
 import { CreateOrderDto, UpdateOrderDto } from './dto';
 import { Order } from './order.entity';
 import { OrderService } from './order.service';
-import { MulterStorage } from '../../infra/helpers';
-import {
-  FileUploadValidationForCreate,
-  FileUploadValidationForUpdate,
-} from '../../infra/validators';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { PaginationDto } from '../../infra/shared/dto';
 import { Public } from '../auth/decorators/public.decorator';
@@ -78,44 +68,26 @@ export class OrderController {
 
   @Public()
   @Post('/')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new order' })
   @ApiCreatedResponse({
     description: 'The order was created successfully',
   })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: MulterStorage('uploads/image/order'),
-    }),
-  )
   @HttpCode(HttpStatus.CREATED)
-  async saveData(
-    @UploadedFile(FileUploadValidationForCreate) file: Express.Multer.File,
-    @Body() data: CreateOrderDto,
-    @Req() request,
-  ): Promise<InsertResult | Order> {
-    return await this.orderService.create(data, file, request);
+  async saveData(@Body() data: CreateOrderDto): Promise<InsertResult | Order> {
+    return await this.orderService.create(data);
   }
 
   @Patch('/:id')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: updating order' })
   @ApiOkResponse({
     description: 'Order was changed',
   })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: MulterStorage('uploads/image/order'),
-    }),
-  )
   @HttpCode(HttpStatus.OK)
   async changeData(
-    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
     @Body() data: UpdateOrderDto,
     @Param('id') id: string,
-    @Req() request,
   ): Promise<UpdateResult | Order> {
-    return await this.orderService.change(data, id, file, request);
+    return await this.orderService.change(data, id);
   }
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)

@@ -12,7 +12,6 @@ import {
 } from 'typeorm';
 import { Category } from '../category/category.entity';
 import { Comment } from '../comment/comment.entity';
-import { FileEntity } from '../file/file.entity';
 import { User } from '../user/user.entity';
 import { Tag } from '../tag/tag.entity';
 
@@ -36,6 +35,9 @@ export class Article extends BaseEntity {
   @Column('boolean', { default: false })
   isActive: boolean = false;
 
+  @Column('jsonb', { nullable: true, array: true })
+  avatar: any[];
+
   @ManyToMany(() => User, (user) => user.articleLikes, {
     onDelete: 'CASCADE',
   })
@@ -55,9 +57,6 @@ export class Article extends BaseEntity {
   })
   @JoinColumn()
   user: User;
-
-  @OneToMany(() => FileEntity, (file) => file.article)
-  avatar: FileEntity[];
 
   @ManyToMany(() => Tag, (tag) => tag.articles, {
     onDelete: 'CASCADE',

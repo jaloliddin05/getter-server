@@ -28,11 +28,11 @@ class CreatePortfolioDto {
 
   @ApiProperty({
     description: `Portfolio image`,
-    example: 'file',
-    type: 'string',
-    format: 'binary',
+    example: 'url',
   })
-  avatar;
+  @IsNotEmpty()
+  @IsString()
+  avatar: string;
 }
 
 export default CreatePortfolioDto;

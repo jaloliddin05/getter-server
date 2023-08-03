@@ -4,35 +4,24 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  HttpException,
   Delete,
   Patch,
   Param,
   Get,
-  UseInterceptors,
-  UploadedFile,
   Query,
   Req,
-  UploadedFiles,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiOperation,
-  ApiConsumes,
 } from '@nestjs/swagger';
 
 import { CreateArticleDto, UpdateArticleDto } from './dto';
 import { Article } from './article.entity';
 import { ArticleService } from './article.service';
-import { MulterStorage } from '../../infra/helpers';
-import {
-  FileUploadValidationForCreate,
-  FileUploadValidationForUpdate,
-} from '../../infra/validators';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { PaginationDto } from '../../infra/shared/dto';
 import { Public } from '../auth/decorators/public.decorator';
@@ -89,43 +78,15 @@ export class ArticleController {
   }
 
   @Post('/')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new article' })
   @ApiCreatedResponse({
     description: 'The article was created successfully',
   })
-  @UseInterceptors(
-    FilesInterceptor('avatar', 2, {
-      storage: MulterStorage('uploads/image/article'),
-    }),
-  )
   @HttpCode(HttpStatus.CREATED)
   async saveData(
-    @UploadedFiles() files,
     @Body() data: CreateArticleDto,
-    @Req() request,
   ): Promise<InsertResult | Article> {
-    return await this.articleService.create(data, files, request);
-  }
-
-  @Post('/avatar/:id')
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Method: creates new article avatar' })
-  @ApiCreatedResponse({
-    description: 'The article avatar was created successfully',
-  })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: MulterStorage('uploads/image/article'),
-    }),
-  )
-  @HttpCode(HttpStatus.CREATED)
-  async uploadAvatar(
-    @UploadedFile() file,
-    @Param('id') id: string,
-    @Req() request,
-  ): Promise<InsertResult | Article> {
-    return await this.articleService.uploadAvatar(id, file, request);
+    return await this.articleService.create(data);
   }
 
   @Post('/add-like/:articleId')
@@ -195,26 +156,6 @@ export class ArticleController {
     @Param('id') id: string,
   ): Promise<UpdateResult | Article> {
     return await this.articleService.change(data, id);
-  }
-
-  @Patch('/avatar/:id')
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Method: updating article avatar' })
-  @ApiOkResponse({
-    description: 'Article avatar was changed',
-  })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: MulterStorage('uploads/image/article'),
-    }),
-  )
-  @HttpCode(HttpStatus.OK)
-  async changeImage(
-    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
-    @Param('id') id: string,
-    @Req() request,
-  ) {
-    return await this.articleService.updateAvatar(id, file, request);
   }
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)

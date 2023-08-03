@@ -12,7 +12,6 @@ import { FindOptionsWhere } from 'typeorm';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { User } from './user.entity';
 import { MailService } from '../mail/mail.service';
-import { FileService } from '../file/file.service';
 import { PositionService } from '../position/position.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashPassword } from '../../infra/helpers';
@@ -24,7 +23,6 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
     private readonly mailService: MailService,
     private readonly connection: DataSource,
-    private readonly fileService: FileService,
     private readonly positionService: PositionService,
   ) {}
 
@@ -37,7 +35,6 @@ export class UsersService {
         name: 'ASC',
       },
       relations: {
-        avatar: true,
         position: true,
       },
     });
@@ -54,10 +51,8 @@ export class UsersService {
   async getOne(id: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       relations: {
-        avatar: true,
         position: true,
         articles: {
-          avatar: true,
           tags: true,
           categories: true,
         },
@@ -105,22 +100,11 @@ export class UsersService {
   }
 
   async deleteOne(id: string) {
-    await this.deleteImage(id);
     const response = await this.usersRepository.delete(id);
     return response;
   }
 
-  async change(
-    value: UpdateUserDto,
-    id: string,
-    file: Express.Multer.File,
-    req,
-  ) {
-    if (file) {
-      const avatar = await this.updateImage(file, id, req);
-      value.avatar = avatar;
-    }
-
+  async change(value: UpdateUserDto, id: string) {
     const response = await this.usersRepository
       .createQueryBuilder()
       .update(User)
@@ -131,17 +115,13 @@ export class UsersService {
     return response;
   }
 
-  async create(data: CreateUserDto, file: Express.Multer.File, req) {
+  async create(data: CreateUserDto) {
     const isEmailExist = await this.checkEmail(data.email);
 
     if (isEmailExist) {
       throw new HttpException('Email already exist', HttpStatus.BAD_REQUEST);
     }
 
-    if (file) {
-      const avatar = await this.uploadImage(file, req);
-      data.avatar = avatar.id;
-    }
     data.password = await hashPassword(data.password);
     const position = await this.positionService.getOne(data.position);
 
@@ -165,30 +145,6 @@ export class UsersService {
     const hash = await bcrypt.hash(code, 10);
     await this.mailService.register({ email, code });
     return hash;
-  }
-
-  async uploadImage(file: Express.Multer.File, request) {
-    const avatar = await this.fileService.uploadFile(file, request);
-    return avatar;
-  }
-
-  async updateImage(file: Express.Multer.File, id: string, request) {
-    const data = await this.getById(id);
-    let avatar;
-    if (data?.avatar?.id) {
-      avatar = await this.fileService.updateFile(data.avatar.id, file, request);
-    } else {
-      avatar = await this.fileService.uploadFile(file, request);
-    }
-
-    return avatar;
-  }
-
-  async deleteImage(id: string) {
-    const data = await this.getById(id);
-    if (data?.avatar?.id) {
-      await this.fileService.removeFile(data.avatar.id);
-    }
   }
 
   async setTrueEmail(id) {

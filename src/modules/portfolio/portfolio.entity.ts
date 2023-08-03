@@ -3,13 +3,10 @@ import {
   Column,
   PrimaryGeneratedColumn,
   BaseEntity,
-  JoinColumn,
-  OneToOne,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
 
-import { FileEntity } from '../file/file.entity';
 import { User } from '../user/user.entity';
 
 @Entity({ name: 'portfolio' })
@@ -32,15 +29,12 @@ export class Portfolio extends BaseEntity {
   @Column({ type: 'timestamp', nullable: false, default: () => 'NOW()' })
   date: string;
 
+  @Column({ type: 'text', nullable: true })
+  avatar: string;
+
   @ManyToMany(() => User, (user) => user.portfolioLikes, {
     onDelete: 'CASCADE',
   })
   @JoinTable()
   likes: User[];
-
-  @OneToOne(() => FileEntity, (file) => file.website, {
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn()
-  avatar: FileEntity;
 }

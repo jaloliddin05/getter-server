@@ -4,36 +4,22 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  HttpException,
   Delete,
   Patch,
   Param,
   Get,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiOperation,
-  ApiConsumes,
 } from '@nestjs/swagger';
 
-import {
-  CreatePortfolioDto,
-  UpdatePortfolioDto,
-  LikePortfolioDto,
-} from './dto';
+import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
 import { Portfolio } from './portfolio.entity';
 import { PortfolioService } from './portfolio.service';
-import { MulterStorage } from '../../infra/helpers';
-import {
-  FileUploadValidationForCreate,
-  FileUploadValidationForUpdate,
-} from '../../infra/validators';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { Query, Req } from '@nestjs/common/decorators';
 import { PaginationDto } from '../../infra/shared/dto';
@@ -70,23 +56,15 @@ export class PortfolioController {
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)
   @Post('/')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new portfolio' })
   @ApiCreatedResponse({
     description: 'The portfolio was created successfully',
   })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: MulterStorage('uploads/image/portfolio'),
-    }),
-  )
   @HttpCode(HttpStatus.CREATED)
   async saveData(
-    @UploadedFile(FileUploadValidationForCreate) file: Express.Multer.File,
     @Body() data: CreatePortfolioDto,
-    @Req() request,
   ): Promise<InsertResult | Portfolio> {
-    return await this.portfolioService.create(data, file, request);
+    return await this.portfolioService.create(data);
   }
 
   @Post('/add-like/:portfolioId')
@@ -123,24 +101,16 @@ export class PortfolioController {
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)
   @Patch('/:id')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: updating portfolio' })
   @ApiOkResponse({
     description: 'Portfolio was changed',
   })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: MulterStorage('uploads/image/portfolio'),
-    }),
-  )
   @HttpCode(HttpStatus.OK)
   async changeData(
-    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
     @Body() data: UpdatePortfolioDto,
     @Param('id') id: string,
-    @Req() request,
   ): Promise<UpdateResult | Portfolio> {
-    return await this.portfolioService.change(data, id, file, request);
+    return await this.portfolioService.change(data, id);
   }
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)

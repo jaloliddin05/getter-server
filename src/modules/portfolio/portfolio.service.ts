@@ -13,7 +13,6 @@ import {
   CreatePortfolioDto,
   LikePortfolioDto,
 } from './dto';
-import { FileService } from '../file/file.service';
 import { Portfolio } from './portfolio.entity';
 import { UsersService } from '../user/user.service';
 
@@ -22,7 +21,6 @@ export class PortfolioService {
   constructor(
     @InjectRepository(Portfolio)
     private readonly portfolioRepository: Repository<Portfolio>,
-    private readonly fileService: FileService,
     private readonly connection: DataSource,
     private readonly userService: UsersService,
   ) {}
@@ -35,16 +33,12 @@ export class PortfolioService {
       order: {
         date: 'ASC',
       },
-      relations: {
-        avatar: true,
-      },
     });
   }
 
   async getById(id: string, cookie?) {
     const portfolio = await this.portfolioRepository.findOne({
       relations: {
-        avatar: true,
         likes: true,
       },
       where: { id },
@@ -68,7 +62,6 @@ export class PortfolioService {
   async getOne(id: string) {
     const portfolio = await this.portfolioRepository.findOne({
       relations: {
-        avatar: true,
         likes: true,
       },
       where: { id },
@@ -82,22 +75,11 @@ export class PortfolioService {
   }
 
   async deleteOne(id: string) {
-    await this.deleteImage(id);
     const response = await this.portfolioRepository.delete(id);
     return response;
   }
 
-  async change(
-    values: UpdatePortfolioDto,
-    id: string,
-    file: Express.Multer.File,
-    req,
-  ) {
-    if (file) {
-      const avatar = await this.updateImage(file, id, req);
-      values.avatar = avatar;
-    }
-
+  async change(values: UpdatePortfolioDto, id: string) {
     const response = await this.portfolioRepository
       .createQueryBuilder()
       .update(Portfolio)
@@ -108,12 +90,7 @@ export class PortfolioService {
     return response;
   }
 
-  async create(values: CreatePortfolioDto, file: Express.Multer.File, request) {
-    if (file) {
-      const avatar = await this.uploadImage(file, request);
-      values.avatar = avatar.id;
-    }
-
+  async create(values: CreatePortfolioDto) {
     const response = await this.portfolioRepository
       .createQueryBuilder()
       .insert()
@@ -122,7 +99,7 @@ export class PortfolioService {
       .returning('id')
       .execute();
 
-    return response
+    return response;
   }
 
   async addLikeToPortfolio(values: LikePortfolioDto) {
@@ -150,29 +127,5 @@ export class PortfolioService {
       await manager.save(portfolio);
     });
     return portfolio;
-  }
-
-  async uploadImage(file: Express.Multer.File, request) {
-    const avatar = await this.fileService.uploadFile(file, request);
-    return avatar;
-  }
-
-  async updateImage(file: Express.Multer.File, id: string, request) {
-    const data = await this.getOne(id);
-    let avatar;
-    if (data?.avatar?.id) {
-      avatar = await this.fileService.updateFile(data.avatar.id, file, request);
-    } else {
-      avatar = await this.fileService.uploadFile(file, request);
-    }
-
-    return avatar;
-  }
-
-  async deleteImage(id: string) {
-    const data = await this.getOne(id);
-    if (data?.avatar?.id) {
-      await this.fileService.removeFile(data.avatar.id);
-    }
   }
 }

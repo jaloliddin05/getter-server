@@ -4,18 +4,13 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  HttpException,
   Delete,
   Param,
   Get,
   Query,
   Req,
   Put,
-  UseInterceptors,
-  UploadedFile,
-  Res,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import {
   ApiCreatedResponse,
@@ -23,14 +18,7 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiOperation,
-  ApiConsumes,
 } from '@nestjs/swagger';
-import { Response } from 'express';
-import {
-  FileUploadValidationForCreate,
-  FileUploadValidationForUpdate,
-} from '../../infra/validators';
-import { MulterStorage } from '../../infra/helpers';
 
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { User } from './user.entity';
@@ -103,24 +91,14 @@ export class UsersController {
 
   @Public()
   @Post('/')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new user' })
   @ApiCreatedResponse({
     description: 'The user was created successfully',
   })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: MulterStorage('uploads/image/user'),
-    }),
-  )
   @HttpCode(HttpStatus.CREATED)
-  async register(
-    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
-    @Body() userData: CreateUserDto,
-    @Req() request,
-  ): Promise<User> {
-    return await this.usersService.create(userData, file, request);
+  async register(@Body() userData: CreateUserDto): Promise<User> {
+    return await this.usersService.create(userData);
   }
 
   @Put('/:id')
@@ -129,19 +107,12 @@ export class UsersController {
     description: 'User was changed',
   })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: MulterStorage('uploads/image/user'),
-    }),
-  )
   @HttpCode(HttpStatus.OK)
   async changeData(
-    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
     @Body() userData: UpdateUserDto,
     @Param('id') id: string,
-    @Req() request,
   ): Promise<UpdateResult | User> {
-    return await this.usersService.change(userData, id, file, request);
+    return await this.usersService.change(userData, id);
   }
 
   @Delete('/:id')

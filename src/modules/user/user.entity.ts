@@ -6,7 +6,6 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
-  OneToOne,
   ManyToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -15,7 +14,6 @@ import { UserRole } from '../../infra/shared/types';
 import { Position } from '../position/position.entity';
 import { Article } from '../article/article.entity';
 import { Comment } from '../comment/comment.entity';
-import { FileEntity } from '../file/file.entity';
 import { Website } from '../website/website.entity';
 import { Portfolio } from '../portfolio/portfolio.entity';
 import { RepliedComment } from '../replied-comment/replied-comment.entity';
@@ -36,12 +34,6 @@ export class User extends BaseEntity {
 
   @Column({ default: 1 })
   role: UserRole;
-
-  // @Column()
-  // phone: string;
-
-  // @Column({ nullable: true })
-  // description: string;
 
   @Column({ default: false })
   isEmailValid: boolean;
@@ -64,11 +56,8 @@ export class User extends BaseEntity {
   @OneToMany(() => RepliedComment, (repliedComment) => repliedComment.user)
   repliedComments: RepliedComment[];
 
-  @OneToOne(() => FileEntity, (file) => file.user, {
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn()
-  avatar: FileEntity;
+  @Column({ type: 'text', nullable: true })
+  avatar: string;
 
   @ManyToMany(() => Article, (article) => article.likes, {
     cascade: true,

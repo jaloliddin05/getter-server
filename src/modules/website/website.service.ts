@@ -7,7 +7,6 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { FileService } from '../file/file.service';
 import { UpdateWebsiteDto, CreateWebsiteDto, LikeDto } from './dto';
 import { Website } from './website.entity';
 import { UsersService } from '../user/user.service';
@@ -17,7 +16,6 @@ export class WebsiteService {
   constructor(
     @InjectRepository(Website)
     private readonly websiteRepository: Repository<Website>,
-    private readonly fileService: FileService,
     private readonly connection: DataSource,
     private readonly userService: UsersService,
   ) {}
@@ -30,9 +28,6 @@ export class WebsiteService {
       order: {
         date: 'DESC',
       },
-      relations: {
-        avatar: true,
-      },
       where,
     });
   }
@@ -40,7 +35,6 @@ export class WebsiteService {
   async getById(id: string, cookie?) {
     const website = await this.websiteRepository.findOne({
       relations: {
-        avatar: true,
         likes: true,
       },
       where: { id },
@@ -64,7 +58,6 @@ export class WebsiteService {
   async getOne(id: string) {
     const website = await this.websiteRepository.findOne({
       relations: {
-        avatar: true,
         likes: true,
       },
       where: { id },
@@ -77,22 +70,11 @@ export class WebsiteService {
   }
 
   async deleteOne(id: string) {
-    await this.deleteImage(id);
     const response = await this.websiteRepository.delete(id);
     return response;
   }
 
-  async change(
-    values: UpdateWebsiteDto,
-    id: string,
-    file: Express.Multer.File,
-    req,
-  ) {
-    if (file) {
-      const avatar = await this.updateImage(file, id, req);
-      values.avatar = avatar;
-    }
-
+  async change(values: UpdateWebsiteDto, id: string) {
     const response = await this.websiteRepository
       .createQueryBuilder()
       .update(Website)
@@ -138,24 +120,5 @@ export class WebsiteService {
       await manager.save(website);
     });
     return website;
-  }
-
-  async updateImage(file: Express.Multer.File, id: string, request) {
-    const data = await this.getOne(id);
-    let avatar;
-    if (data?.avatar?.id) {
-      avatar = await this.fileService.updateFile(data.avatar.id, file, request);
-    } else {
-      avatar = await this.fileService.uploadFile(file, request);
-    }
-
-    return avatar;
-  }
-
-  async deleteImage(id: string) {
-    const data = await this.getOne(id);
-    if (data?.avatar?.id) {
-      await this.fileService.removeFile(data.avatar.id);
-    }
   }
 }

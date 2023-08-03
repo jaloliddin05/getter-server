@@ -3,12 +3,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   BaseEntity,
-  OneToOne,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
-import { FileEntity } from '../file/file.entity';
 import { User } from '../user/user.entity';
 
 @Entity({ name: 'website' })
@@ -34,15 +31,12 @@ export class Website extends BaseEntity {
   @Column({ type: 'timestamp', nullable: false, default: () => 'NOW()' })
   date: string;
 
+  @Column({ type: 'text', nullable: true })
+  avatar: string;
+
   @ManyToMany(() => User, (user) => user.websiteLikes, {
     onDelete: 'CASCADE',
   })
   @JoinTable()
   likes: User[];
-
-  @OneToOne(() => FileEntity, (file) => file.website, {
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn()
-  avatar: FileEntity;
 }

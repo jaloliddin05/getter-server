@@ -4,25 +4,19 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  HttpException,
   Delete,
   Patch,
   Param,
   Get,
   Query,
-  UseInterceptors,
-  UploadedFile,
   Req,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Request } from 'express';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiOperation,
-  ApiConsumes,
 } from '@nestjs/swagger';
 
 import { CreateWebsiteDto, LikeDto, UpdateWebsiteDto } from './dto';
@@ -119,24 +113,16 @@ export class WebsiteController {
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)
   @Patch('/:id')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: updating website' })
   @ApiOkResponse({
     description: 'Website was changed',
   })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: MulterStorage('uploads/image/website'),
-    }),
-  )
   @HttpCode(HttpStatus.OK)
   async changeData(
-    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
     @Body() data: UpdateWebsiteDto,
     @Param('id') id: string,
-    @Req() request,
   ): Promise<UpdateResult | Website> {
-    return await this.websiteService.change(data, id, file, request);
+    return await this.websiteService.change(data, id);
   }
 
   @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)

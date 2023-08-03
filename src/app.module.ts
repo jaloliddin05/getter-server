@@ -9,7 +9,6 @@ import { ArticleModule } from './modules/article/article.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { CommentModule } from './modules/comment/comment.module';
-import { FileModule } from './modules/file/file.module';
 import { MailModule } from './modules/mail/mail.module';
 import { OrderModule } from './modules/order/order.module';
 import { PortfolioModule } from './modules/portfolio/portfolio.module';
@@ -40,7 +39,6 @@ import { SubServiceModule } from './modules/sub-service/sub-service.module';
     ArticleModule,
     CategoryModule,
     CommentModule,
-    FileModule,
     MailModule,
     OrderModule,
     OurServiceModule,

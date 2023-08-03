@@ -9,7 +9,6 @@ import { DataSource, EntityManager } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { UpdateArticleDto, CreateArticleDto, LikeArticleDto } from './dto';
-import { FileService } from '../file/file.service';
 import { Article } from './article.entity';
 import { UsersService } from '../user/user.service';
 import { CategoryService } from '../category/category.service';
@@ -20,7 +19,6 @@ export class ArticleService {
   constructor(
     @InjectRepository(Article)
     private readonly articleRepository: Repository<Article>,
-    private readonly fileService: FileService,
     private readonly connection: DataSource,
     private readonly userService: UsersService,
     private readonly categoryService: CategoryService,
@@ -37,19 +35,14 @@ export class ArticleService {
       },
       relations: {
         user: {
-          avatar: true,
           position: true,
         },
         avatar: true,
         tags: true,
         comments: {
-          user: {
-            avatar: true,
-          },
+          user: true,
         },
-        likes: {
-          avatar: true,
-        },
+        likes: true,
       },
       where,
     });
@@ -59,18 +52,14 @@ export class ArticleService {
     const article = await this.articleRepository.findOne({
       relations: {
         user: {
-          avatar: true,
           position: true,
         },
         comments: {
           user: {
-            avatar: true,
             position: true,
           },
           repliedComments: {
-            user: {
-              avatar: true,
-            },
+            user: true,
           },
         },
         avatar: true,
@@ -120,19 +109,14 @@ export class ArticleService {
     const articles = await this.articleRepository.find({
       relations: {
         user: {
-          avatar: true,
           position: true,
         },
         avatar: true,
         tags: true,
         comments: {
-          user: {
-            avatar: true,
-          },
+          user: true,
         },
-        likes: {
-          avatar: true,
-        },
+        likes: true,
       },
       where: {
         categories: { id },
@@ -144,7 +128,6 @@ export class ArticleService {
   }
 
   async deleteOne(id: string) {
-    await this.deleteImage(id);
     const response = await this.articleRepository.delete(id);
     return response;
   }
@@ -165,19 +148,7 @@ export class ArticleService {
     return data;
   }
 
-  async create(
-    values: CreateArticleDto,
-    files: Express.Multer.File[],
-    request,
-  ) {
-    if (files.length) {
-      values.avatar = [];
-      for (let file of files) {
-        const avatar = await this.uploadImage(file, request);
-        values.avatar.push(avatar);
-      }
-    }
-
+  async create(values: CreateArticleDto) {
     const categories = await this.categoryService.getMoreByIds(
       values.categories,
     );
@@ -240,38 +211,5 @@ export class ArticleService {
     await this.articleRepository.save(article);
 
     return article;
-  }
-
-  async updateAvatar(id: string, file: Express.Multer.File, req) {
-    await this.updateImage(file, id, req);
-  }
-
-  async uploadAvatar(id: string, file: Express.Multer.File, req) {
-    const avatar = await this.uploadImage(file, req);
-    const article = await this.articleRepository.findOne({
-      where: { id },
-      relations: { avatar: true },
-    });
-    article.avatar.push(avatar);
-    return await this.articleRepository.save(article);
-  }
-
-  async uploadImage(file: Express.Multer.File, request) {
-    const avatar = await this.fileService.uploadFile(file, request);
-    return avatar;
-  }
-
-  async updateImage(file: Express.Multer.File, id: string, request) {
-    const avatar = await this.fileService.updateFile(id, file, request);
-    return avatar;
-  }
-
-  async deleteImage(id: string) {
-    const data = await this.getById(id);
-    if (data?.avatar?.length) {
-      for (let avatar of data?.avatar) {
-        await this.fileService.removeFile(avatar.id);
-      }
-    }
   }
 }

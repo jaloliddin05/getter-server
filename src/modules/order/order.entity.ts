@@ -1,12 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  JoinColumn,
-  OneToOne,
-} from 'typeorm';
-import { FileEntity } from '../file/file.entity';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 
 @Entity({ name: 'order' })
 export class Order extends BaseEntity {
@@ -28,9 +20,6 @@ export class Order extends BaseEntity {
   @Column('boolean', { default: false })
   isActive: boolean = false;
 
-  @OneToOne(() => FileEntity, (file) => file.article, {
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn()
-  avatar: FileEntity;
+  @Column({ type: 'text', nullable: true })
+  avatar: string;
 }
