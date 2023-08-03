@@ -52,7 +52,6 @@ export class TagController {
     return this.tagService.getOne(id);
   }
 
-  @Roles(userRoles.ADMIN, userRoles.SUPER_ADMIN)
   @Post('/')
   @ApiOperation({ summary: 'Method: creates new tag' })
   @ApiCreatedResponse({
