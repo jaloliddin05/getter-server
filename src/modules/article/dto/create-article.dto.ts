@@ -1,5 +1,21 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  isArray,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { BadRequestException } from '@nestjs/common';
+
+function parseTextToArray(name: string, value?: string) {
+  const arr = value ? JSON.parse(value) : '';
+  if (!isArray(arr)) {
+    throw new BadRequestException(`${name} should be array.`);
+  }
+  return arr;
+}
 
 class CreateArticleDto {
   @ApiProperty({
@@ -47,6 +63,9 @@ class CreateArticleDto {
   })
   @IsOptional()
   @IsArray()
+  @Transform(({ value }: { value: string }) =>
+    parseTextToArray('avatar', value),
+  )
   avatar;
 }
 
