@@ -44,14 +44,6 @@ class CreateArticleDto {
   readonly categories: string[];
 
   @ApiProperty({
-    description: `User ID`,
-    example: '734912fd-e011-4da6-b0a3-031fd82ab2f9',
-  })
-  @IsNotEmpty()
-  @IsString()
-  readonly user: string;
-
-  @ApiProperty({
     description: `avatar`,
     example: [
       {

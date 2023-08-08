@@ -85,8 +85,9 @@ export class ArticleController {
   @HttpCode(HttpStatus.CREATED)
   async saveData(
     @Body() data: CreateArticleDto,
+    @Req() req,
   ): Promise<InsertResult | Article> {
-    return await this.articleService.create(data);
+    return await this.articleService.create(data, req.user.id);
   }
 
   @Post('/add-like/:articleId')

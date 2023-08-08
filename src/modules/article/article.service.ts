@@ -148,11 +148,11 @@ export class ArticleService {
     return data;
   }
 
-  async create(values: CreateArticleDto) {
+  async create(values: CreateArticleDto, userId:string) {
     const categories = await this.categoryService.getMoreByIds(
       values.categories,
     );
-    const user = await this.userService.getById(values.user);
+    const user = await this.userService.getById(userId);
     const tags = await this.tagService.getMoreByIds(values.tags);
     const response = this.articleRepository.create({
       ...values,
