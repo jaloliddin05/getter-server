@@ -55,6 +55,9 @@ export class UsersService {
         articles: {
           tags: true,
           categories: true,
+          comments: {
+            user: true,
+          },
         },
       },
       where: { id },
@@ -74,13 +77,13 @@ export class UsersService {
   }
 
   async getUserCategories(userId: string) {
-    const categories = this.usersRepository
+    const categories = await this.usersRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.articles', 'article')
       .leftJoinAndSelect('article.categories', 'category')
       .where('user.id = :userId', { userId })
-      .groupBy('category.id')
       .select(['category.id', 'category.title'])
+      .groupBy('category.id')
       .getMany();
 
     return categories;
