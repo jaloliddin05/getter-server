@@ -27,12 +27,6 @@ class CreateArticleDto {
   readonly tags: string[];
 
   @ApiProperty({
-    description: `Article image`,
-    example: 'file',
-    type: 'string',
-    format: 'binary',
-  })
-  @ApiProperty({
     description: `Category ID`,
     example: [
       '734912fd-e011-4da6-b0a3-031fd82ab2f9',
@@ -40,7 +34,7 @@ class CreateArticleDto {
     ],
   })
   @IsNotEmpty()
-  @IsString()
+  @IsArray()
   readonly categories: string[];
 
   @ApiProperty({
