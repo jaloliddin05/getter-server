@@ -35,7 +35,12 @@ export class Article extends BaseEntity {
   @Column('boolean', { default: false })
   isActive: boolean = false;
 
-  @Column('jsonb', { nullable: true, array: true })
+  @Column({
+    type: 'jsonb',
+    array: false,
+    default: () => "'[]'",
+    nullable: false,
+  })
   avatar: any[];
 
   @ManyToMany(() => User, (user) => user.articleLikes, {

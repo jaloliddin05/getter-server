@@ -37,7 +37,6 @@ export class ArticleService {
         user: {
           position: true,
         },
-        avatar: true,
         tags: true,
         comments: {
           user: true,
@@ -148,7 +147,7 @@ export class ArticleService {
     return data;
   }
 
-  async create(values: CreateArticleDto, userId:string) {
+  async create(values: CreateArticleDto, userId: string) {
     const categories = await this.categoryService.getMoreByIds(
       values.categories,
     );
