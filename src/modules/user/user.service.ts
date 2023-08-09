@@ -52,13 +52,6 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       relations: {
         position: true,
-        articles: {
-          tags: true,
-          categories: true,
-          comments: {
-            user: true,
-          },
-        },
       },
       where: { id },
     });

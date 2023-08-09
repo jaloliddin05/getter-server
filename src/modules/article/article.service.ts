@@ -126,6 +126,26 @@ export class ArticleService {
     return articles;
   }
 
+  async getByUserId(id:string){
+    const articles = await this.articleRepository.find({
+      where:{
+        user:{id}
+      },
+      relations:{
+        comments:{
+          user:true
+        },
+        likes:true,
+        tags:true
+      },
+      order:{
+        date:"DESC"
+      }
+    })
+
+    return articles
+  }
+
   async deleteOne(id: string) {
     const response = await this.articleRepository.delete(id);
     return response;

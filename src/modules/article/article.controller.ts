@@ -77,6 +77,17 @@ export class ArticleController {
     return this.articleService.getByCategoryId(id);
   }
 
+  @Public()
+  @Get('/user/:id')
+  @ApiOperation({ summary: 'Method: returns  articles by user id' })
+  @ApiOkResponse({
+    description: 'The articles was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getArticleByUserId(@Param('id') id: string): Promise<Article[]> {
+    return this.articleService.getByUserId(id);
+  }
+
   @Post('/')
   @ApiOperation({ summary: 'Method: creates new article' })
   @ApiCreatedResponse({
