@@ -24,6 +24,22 @@ class CreateWebsiteDto {
   @IsNotEmpty()
   @IsString()
   readonly link: string;
+
+  @ApiProperty({
+    description: `title`,
+    example: 'Site Website',
+  })
+  @IsNotEmpty()
+  @IsString()
+  readonly title: string;
+
+  @ApiProperty({
+    description: `creator`,
+    example: 'Getter uz',
+  })
+  @IsNotEmpty()
+  @IsString()
+  readonly creator: string;
 }
 
 export default CreateWebsiteDto;

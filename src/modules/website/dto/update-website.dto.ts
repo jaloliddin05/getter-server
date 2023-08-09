@@ -32,6 +32,22 @@ class UpdateWebsiteDto {
   @IsOptional()
   @IsString()
   avatar: string;
+
+  @ApiProperty({
+    description: `title`,
+    example: 'Site Website',
+  })
+  @IsOptional()
+  @IsString()
+  readonly title: string;
+
+  @ApiProperty({
+    description: `creator`,
+    example: 'Getter uz',
+  })
+  @IsOptional()
+  @IsString()
+  readonly creator: string;
 }
 
 export default UpdateWebsiteDto;

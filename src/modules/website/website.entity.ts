@@ -22,6 +22,12 @@ export class Website extends BaseEntity {
   @Column({ nullable: true })
   link: string;
 
+  @Column({ nullable: true })
+  creator: string;
+
+  @Column({ nullable: true })
+  title: string;
+
   @Column({ default: 0 })
   likesCount: number;
 
