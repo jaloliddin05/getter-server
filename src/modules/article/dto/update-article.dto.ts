@@ -28,6 +28,14 @@ class UpdateArticleDto {
   @IsOptional()
   @IsArray()
   readonly categories: string[];
+
+  @ApiProperty({
+    description: `desc imgs`,
+    example: ['url', 'url'],
+  })
+  @IsOptional()
+  @IsArray()
+  readonly descImgs: string[];
 }
 
 export default UpdateArticleDto;

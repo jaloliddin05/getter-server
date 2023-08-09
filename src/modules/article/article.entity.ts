@@ -32,6 +32,9 @@ export class Article extends BaseEntity {
   @Column({ default: 0 })
   likesCount: number;
 
+  @Column('text', { array: true, nullable: true })
+  descImgs: string[];
+
   @Column('boolean', { default: false })
   isActive: boolean = false;
 
