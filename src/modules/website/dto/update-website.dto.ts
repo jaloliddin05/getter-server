@@ -2,20 +2,20 @@ import { IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 class UpdateWebsiteDto {
   @ApiProperty({
-    description: `title`,
-    example: 'Getter',
+    description: `name`,
+    example: 'Kaneki Ken',
   })
   @IsOptional()
   @IsString()
-  readonly title: string;
+  readonly name: string;
 
   @ApiProperty({
-    description: `Creator`,
-    example: 'Getter.uz',
+    description: `phone`,
+    example: '+998998887766',
   })
   @IsOptional()
   @IsString()
-  readonly creator: string;
+  readonly phone: string;
 
   @ApiProperty({
     description: `Link of website`,

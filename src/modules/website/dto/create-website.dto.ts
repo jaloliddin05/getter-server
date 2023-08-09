@@ -2,20 +2,20 @@ import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 class CreateWebsiteDto {
   @ApiProperty({
-    description: `title`,
-    example: 'Getter',
+    description: `name`,
+    example: 'Kaneki Ken',
   })
   @IsNotEmpty()
   @IsString()
-  readonly title: string;
+  readonly name: string;
 
   @ApiProperty({
-    description: `Creator`,
-    example: 'Getter.uz',
+    description: `phone`,
+    example: '+998998887766',
   })
   @IsNotEmpty()
   @IsString()
-  readonly creator: string;
+  readonly phone: string;
 
   @ApiProperty({
     description: `Link of website`,
