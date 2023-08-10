@@ -126,24 +126,24 @@ export class ArticleService {
     return articles;
   }
 
-  async getByUserId(id:string){
+  async getByUserId(id: string) {
     const articles = await this.articleRepository.find({
-      where:{
-        user:{id}
+      where: {
+        user: { id },
       },
-      relations:{
-        comments:{
-          user:true
+      relations: {
+        comments: {
+          user: true,
         },
-        likes:true,
-        tags:true
+        likes: true,
+        tags: true,
       },
-      order:{
-        date:"DESC"
-      }
-    })
+      order: {
+        date: 'DESC',
+      },
+    });
 
-    return articles
+    return articles;
   }
 
   async deleteOne(id: string) {

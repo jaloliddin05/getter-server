@@ -15,6 +15,7 @@ import { MailService } from '../mail/mail.service';
 import { PositionService } from '../position/position.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashPassword } from '../../infra/helpers';
+import { Article } from '../article/article.entity';
 
 @Injectable()
 export class UsersService {
@@ -69,30 +70,43 @@ export class UsersService {
     throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
   }
 
-  async getUserCategories(userId: string) {
-    const categories = await this.usersRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.articles', 'article')
-      .leftJoinAndSelect('article.categories', 'category')
-      .where('user.id = :userId', { userId })
-      .select(['category.id', 'category.title'])
-      .groupBy('category.id')
-      .getMany();
+  async getUserCategories(id: string) {
+    const data = await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        articles: {
+          categories: true,
+        },
+      },
+    });
 
-    return categories;
+    return this.getUniqueData(data.articles, 'categories');
   }
 
-  async getUserTags(userId: string) {
-    const tags = this.usersRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.articles', 'article')
-      .leftJoinAndSelect('article.tags', 'tag')
-      .where('user.id = :userId', { userId })
-      .groupBy('tag.id')
-      .select(['tag.id', 'tag.title'])
-      .getMany();
+  async getUserTags(id: string) {
+    const data = await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        articles: {
+          tags: true,
+        },
+      },
+    });
 
-    return tags;
+    return this.getUniqueData(data.articles, 'tags');
+  }
+
+  async getUniqueData(articles: Article[], prop: string) {
+    const res = [];
+    for (let article of articles) {
+      for (let item of article[prop]) {
+        const isExist = res.find((r) => r.id == item.id);
+        if (!isExist) {
+          res.push(item);
+        }
+      }
+    }
+    return res;
   }
 
   async deleteOne(id: string) {
